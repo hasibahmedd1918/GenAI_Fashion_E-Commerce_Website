@@ -4,7 +4,7 @@ export const products: Product[] = [
   // Men's Fashion
   {
     id: 'men-1',
-    name: 'Premium Cotton Panjabi',
+    name: 'Hasib',
     namebn: 'প্রিমিয়াম কটন পাঞ্জাবি',
     category: 'men',
     subcategory: 'traditional',
