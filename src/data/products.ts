@@ -5,7 +5,7 @@ export const products: Product[] = [
   {
     id: 'men-1',
     name: 'Hasib',
-    namebn: 'প্রিমিয়াম কটন পাঞ্জাবি',
+    namebn: 'Hasib Premium punjabi',
     category: 'men',
     subcategory: 'traditional',
     price: 2500,
