@@ -1,37 +1,42 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, ShoppingCart, User, Menu, X, MessageCircle, Camera } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
-interface HeaderProps {
-  onChatToggle: () => void;
-  onAuthToggle: () => void;
-  onCartToggle: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggle }) => {
+const Header = () => {
   const { state, dispatch } = useAppContext();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const query = formData.get('search') as string;
-    dispatch({ type: 'SET_SEARCH_QUERY', payload: query });
+    if (searchQuery.trim()) {
+      dispatch({ type: 'SET_SEARCH_QUERY', payload: searchQuery });
+      navigate('/products');
+    }
   };
 
-  const handleCategorySelect = (category: 'all' | 'men' | 'women' | 'kids') => {
+  const handleCategorySelect = (category) => {
     dispatch({ type: 'SET_CATEGORY', payload: category });
+    navigate('/products');
     setIsMenuOpen(false);
   };
 
   const cartItemsCount = state.cart.reduce((total, item) => total + item.quantity, 0);
+
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">G</span>
             </div>
@@ -39,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <h1 className="text-xl font-bold text-gray-800">GenAI Fashion</h1>
               <p className="text-xs text-gray-500">Bangladesh's Smart Fashion</p>
             </div>
-          </div>
+          </Link>
 
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
@@ -47,7 +52,8 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <div className="relative">
                 <input
                   type="text"
-                  name="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for sarees, panjabis, dresses..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
@@ -60,10 +66,20 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
           <div className="flex items-center space-x-4">
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex space-x-6">
+              <Link
+                to="/"
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/') 
+                    ? 'text-purple-600' 
+                    : 'text-gray-600 hover:text-purple-600'
+                }`}
+              >
+                Home
+              </Link>
               <button
                 onClick={() => handleCategorySelect('all')}
                 className={`text-sm font-medium transition-colors ${
-                  state.selectedCategory === 'all' 
+                  state.selectedCategory === 'all' && isActive('/products')
                     ? 'text-purple-600' 
                     : 'text-gray-600 hover:text-purple-600'
                 }`}
@@ -73,7 +89,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('men')}
                 className={`text-sm font-medium transition-colors ${
-                  state.selectedCategory === 'men' 
+                  state.selectedCategory === 'men' && isActive('/products')
                     ? 'text-purple-600' 
                     : 'text-gray-600 hover:text-purple-600'
                 }`}
@@ -83,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('women')}
                 className={`text-sm font-medium transition-colors ${
-                  state.selectedCategory === 'women' 
+                  state.selectedCategory === 'women' && isActive('/products')
                     ? 'text-purple-600' 
                     : 'text-gray-600 hover:text-purple-600'
                 }`}
@@ -93,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('kids')}
                 className={`text-sm font-medium transition-colors ${
-                  state.selectedCategory === 'kids' 
+                  state.selectedCategory === 'kids' && isActive('/products')
                     ? 'text-purple-600' 
                     : 'text-gray-600 hover:text-purple-600'
                 }`}
@@ -104,20 +120,26 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
 
             {/* Action Buttons */}
             <button
-              onClick={onChatToggle}
+              onClick={() => dispatch({ type: 'TOGGLE_CHATBOT' })}
               className="p-2 text-gray-600 hover:text-purple-600 transition-colors"
               title="AI Assistant"
             >
               <div className="relative">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">AI</span>
-                </div>
+                <MessageCircle className="h-6 w-6" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               </div>
             </button>
 
             <button
-              onClick={onCartToggle}
+              onClick={() => dispatch({ type: 'TOGGLE_VIRTUAL_TRYON' })}
+              className="p-2 text-gray-600 hover:text-purple-600 transition-colors"
+              title="Virtual Try-On"
+            >
+              <Camera className="h-6 w-6" />
+            </button>
+
+            <Link
+              to="/cart"
               className="p-2 text-gray-600 hover:text-purple-600 transition-colors relative"
               title="Shopping Cart"
             >
@@ -127,15 +149,24 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
                   {cartItemsCount}
                 </span>
               )}
-            </button>
+            </Link>
 
-            <button
-              onClick={onAuthToggle}
-              className="p-2 text-gray-600 hover:text-purple-600 transition-colors"
-              title={state.user ? state.user.name : 'Login'}
-            >
-              <User className="h-6 w-6" />
-            </button>
+            {state.isAuthenticated ? (
+              <Link
+                to="/profile"
+                className="p-2 text-gray-600 hover:text-purple-600 transition-colors"
+                title={state.user?.name || 'Profile'}
+              >
+                <User className="h-6 w-6" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Login
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -153,7 +184,8 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
             <div className="relative">
               <input
                 type="text"
-                name="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search fashion items..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
@@ -166,10 +198,21 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
         {isMenuOpen && (
           <div className="lg:hidden py-4 border-t">
             <nav className="flex flex-col space-y-3">
+              <Link
+                to="/"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-left py-2 px-4 rounded-lg transition-colors ${
+                  isActive('/') 
+                    ? 'bg-purple-100 text-purple-600' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Home
+              </Link>
               <button
                 onClick={() => handleCategorySelect('all')}
                 className={`text-left py-2 px-4 rounded-lg transition-colors ${
-                  state.selectedCategory === 'all' 
+                  state.selectedCategory === 'all' && isActive('/products')
                     ? 'bg-purple-100 text-purple-600' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
@@ -179,7 +222,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('men')}
                 className={`text-left py-2 px-4 rounded-lg transition-colors ${
-                  state.selectedCategory === 'men' 
+                  state.selectedCategory === 'men' && isActive('/products')
                     ? 'bg-purple-100 text-purple-600' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
@@ -189,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('women')}
                 className={`text-left py-2 px-4 rounded-lg transition-colors ${
-                  state.selectedCategory === 'women' 
+                  state.selectedCategory === 'women' && isActive('/products')
                     ? 'bg-purple-100 text-purple-600' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
@@ -199,7 +242,7 @@ const Header: React.FC<HeaderProps> = ({ onChatToggle, onAuthToggle, onCartToggl
               <button
                 onClick={() => handleCategorySelect('kids')}
                 className={`text-left py-2 px-4 rounded-lg transition-colors ${
-                  state.selectedCategory === 'kids' 
+                  state.selectedCategory === 'kids' && isActive('/products')
                     ? 'bg-purple-100 text-purple-600' 
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}

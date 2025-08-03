@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Phone, Mail, MapPin } from 'lucide-react';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -35,11 +36,11 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Men's Fashion</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Women's Fashion</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Kids Collection</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Traditional Wear</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">New Arrivals</a></li>
+              <li><Link to="/products/men" className="text-gray-300 hover:text-white transition-colors">Men's Fashion</Link></li>
+              <li><Link to="/products/women" className="text-gray-300 hover:text-white transition-colors">Women's Fashion</Link></li>
+              <li><Link to="/products/kids" className="text-gray-300 hover:text-white transition-colors">Kids Collection</Link></li>
+              <li><Link to="/products" className="text-gray-300 hover:text-white transition-colors">All Products</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-white transition-colors">New Arrivals</Link></li>
             </ul>
           </div>
 

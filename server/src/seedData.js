@@ -1,11 +1,13 @@
-import { Product } from '../types';
+const mongoose = require('mongoose');
+const Product = require('./models/Product');
+require('dotenv').config();
 
-export const products: Product[] = [
+// Sample product data for Bangladesh fashion
+const sampleProducts = [
   // Men's Fashion
   {
-    id: 'men-1',
-    name: 'Hasib',
-    namebn: 'Hasib Premium punjabi',
+    name: 'Premium Cotton Panjabi',
+    namebn: 'প্রিমিয়াম কটন পাঞ্জাবি',
     category: 'men',
     subcategory: 'traditional',
     price: 2500,
@@ -16,12 +18,13 @@ export const products: Product[] = [
     colors: ['White', 'Cream', 'Light Blue', 'Grey'],
     rating: 4.8,
     reviews: 156,
-    inStock: true,
+    stock: 50,
     isTraditional: true,
-    occasion: ['eid', 'wedding', 'formal']
+    occasion: ['eid', 'wedding', 'formal'],
+    tags: ['panjabi', 'traditional', 'cotton', 'eid'],
+    featured: true
   },
   {
-    id: 'men-2',
     name: 'Designer Kurta Set',
     namebn: 'ডিজাইনার কুর্তা সেট',
     category: 'men',
@@ -34,12 +37,12 @@ export const products: Product[] = [
     colors: ['Maroon', 'Navy', 'Golden', 'Black'],
     rating: 4.9,
     reviews: 89,
-    inStock: true,
+    stock: 30,
     isTraditional: true,
-    occasion: ['wedding', 'festival', 'party']
+    occasion: ['wedding', 'festival', 'party'],
+    tags: ['kurta', 'designer', 'festive']
   },
   {
-    id: 'men-3',
     name: 'Casual Cotton Shirt',
     category: 'men',
     subcategory: 'casual',
@@ -50,11 +53,11 @@ export const products: Product[] = [
     colors: ['Blue', 'White', 'Black', 'Grey'],
     rating: 4.5,
     reviews: 234,
-    inStock: true,
-    occasion: ['casual', 'office']
+    stock: 75,
+    occasion: ['casual', 'office'],
+    tags: ['shirt', 'cotton', 'casual']
   },
   {
-    id: 'men-4',
     name: 'Formal Blazer',
     category: 'men',
     subcategory: 'formal',
@@ -65,11 +68,11 @@ export const products: Product[] = [
     colors: ['Navy', 'Black', 'Grey'],
     rating: 4.7,
     reviews: 67,
-    inStock: true,
-    occasion: ['office', 'formal', 'business']
+    stock: 25,
+    occasion: ['office', 'formal', 'business'],
+    tags: ['blazer', 'formal', 'business']
   },
   {
-    id: 'men-5',
     name: 'Denim Jeans',
     category: 'men',
     subcategory: 'casual',
@@ -80,13 +83,13 @@ export const products: Product[] = [
     colors: ['Blue', 'Black', 'Grey'],
     rating: 4.6,
     reviews: 189,
-    inStock: true,
-    occasion: ['casual', 'daily']
+    stock: 60,
+    occasion: ['casual', 'daily'],
+    tags: ['jeans', 'denim', 'casual']
   },
 
   // Women's Fashion
   {
-    id: 'women-1',
     name: 'Elegant Silk Saree',
     namebn: 'এলিগ্যান্ট সিল্ক শাড়ি',
     category: 'women',
@@ -99,12 +102,13 @@ export const products: Product[] = [
     colors: ['Red', 'Maroon', 'Golden', 'Green'],
     rating: 4.9,
     reviews: 298,
-    inStock: true,
+    stock: 40,
     isTraditional: true,
-    occasion: ['wedding', 'festival', 'party']
+    occasion: ['wedding', 'festival', 'party'],
+    tags: ['saree', 'silk', 'traditional', 'wedding'],
+    featured: true
   },
   {
-    id: 'women-2',
     name: 'Designer Salwar Kameez',
     namebn: 'ডিজাইনার সালোয়ার কামিজ',
     category: 'women',
@@ -117,12 +121,12 @@ export const products: Product[] = [
     colors: ['Pink', 'Blue', 'White', 'Yellow'],
     rating: 4.7,
     reviews: 156,
-    inStock: true,
+    stock: 55,
     isTraditional: true,
-    occasion: ['daily', 'office', 'casual']
+    occasion: ['daily', 'office', 'casual'],
+    tags: ['salwar', 'kameez', 'embroidery']
   },
   {
-    id: 'women-3',
     name: 'Cotton Kurti',
     namebn: 'কটন কুর্তি',
     category: 'women',
@@ -134,11 +138,11 @@ export const products: Product[] = [
     colors: ['White', 'Pink', 'Blue', 'Yellow', 'Green'],
     rating: 4.5,
     reviews: 445,
-    inStock: true,
-    occasion: ['daily', 'casual']
+    stock: 80,
+    occasion: ['daily', 'casual'],
+    tags: ['kurti', 'cotton', 'casual']
   },
   {
-    id: 'women-4',
     name: 'Party Wear Gown',
     category: 'women',
     subcategory: 'party',
@@ -149,11 +153,11 @@ export const products: Product[] = [
     colors: ['Black', 'Red', 'Navy', 'Maroon'],
     rating: 4.8,
     reviews: 89,
-    inStock: true,
-    occasion: ['party', 'wedding', 'formal']
+    stock: 35,
+    occasion: ['party', 'wedding', 'formal'],
+    tags: ['gown', 'party', 'glamorous']
   },
   {
-    id: 'women-5',
     name: 'Casual Western Top',
     category: 'women',
     subcategory: 'western',
@@ -164,13 +168,13 @@ export const products: Product[] = [
     colors: ['White', 'Black', 'Pink', 'Blue'],
     rating: 4.4,
     reviews: 267,
-    inStock: true,
-    occasion: ['casual', 'daily']
+    stock: 90,
+    occasion: ['casual', 'daily'],
+    tags: ['top', 'western', 'trendy']
   },
 
   // Kids Fashion
   {
-    id: 'kids-1',
     name: 'Boys Cotton T-Shirt',
     namebn: 'ছেলেদের কটন টি-শার্ট',
     category: 'kids',
@@ -182,11 +186,11 @@ export const products: Product[] = [
     colors: ['Blue', 'Red', 'Green', 'Yellow', 'White'],
     rating: 4.6,
     reviews: 178,
-    inStock: true,
-    occasion: ['daily', 'casual', 'school']
+    stock: 100,
+    occasion: ['daily', 'casual', 'school'],
+    tags: ['tshirt', 'cotton', 'kids', 'boys']
   },
   {
-    id: 'kids-2',
     name: 'Girls Frock Dress',
     namebn: 'মেয়েদের ফ্রক ড্রেস',
     category: 'kids',
@@ -198,11 +202,11 @@ export const products: Product[] = [
     colors: ['Pink', 'Purple', 'Blue', 'Yellow'],
     rating: 4.8,
     reviews: 134,
-    inStock: true,
-    occasion: ['party', 'festival', 'casual']
+    stock: 70,
+    occasion: ['party', 'festival', 'casual'],
+    tags: ['frock', 'dress', 'girls', 'party']
   },
   {
-    id: 'kids-3',
     name: 'Boys Panjabi Set',
     namebn: 'ছেলেদের পাঞ্জাবি সেট',
     category: 'kids',
@@ -214,12 +218,12 @@ export const products: Product[] = [
     colors: ['White', 'Cream', 'Light Blue'],
     rating: 4.7,
     reviews: 89,
-    inStock: true,
+    stock: 45,
     isTraditional: true,
-    occasion: ['eid', 'wedding', 'festival']
+    occasion: ['eid', 'wedding', 'festival'],
+    tags: ['panjabi', 'traditional', 'boys', 'eid']
   },
   {
-    id: 'kids-4',
     name: 'School Uniform Shirt',
     namebn: 'স্কুলের ইউনিফর্ম শার্ট',
     category: 'kids',
@@ -231,11 +235,11 @@ export const products: Product[] = [
     colors: ['White', 'Light Blue'],
     rating: 4.5,
     reviews: 456,
-    inStock: true,
-    occasion: ['school', 'formal']
+    stock: 120,
+    occasion: ['school', 'formal'],
+    tags: ['uniform', 'school', 'shirt']
   },
   {
-    id: 'kids-5',
     name: 'Winter Sweater',
     namebn: 'শীতের সোয়েটার',
     category: 'kids',
@@ -247,16 +251,16 @@ export const products: Product[] = [
     colors: ['Red', 'Blue', 'Green', 'Grey'],
     rating: 4.6,
     reviews: 123,
-    inStock: true,
-    occasion: ['winter', 'casual']
+    stock: 65,
+    occasion: ['winter', 'casual'],
+    tags: ['sweater', 'winter', 'warm']
   }
 ];
 
 // Additional products to reach 15+ per category
-const additionalProducts: Product[] = [
+const additionalProducts = [
   // More Men's items
   {
-    id: 'men-6',
     name: 'Polo T-Shirt',
     category: 'men',
     subcategory: 'casual',
@@ -267,11 +271,11 @@ const additionalProducts: Product[] = [
     colors: ['Navy', 'White', 'Grey', 'Red'],
     rating: 4.4,
     reviews: 156,
-    inStock: true,
-    occasion: ['casual', 'sport']
+    stock: 85,
+    occasion: ['casual', 'sport'],
+    tags: ['polo', 'tshirt', 'casual']
   },
   {
-    id: 'men-7',
     name: 'Leather Jacket',
     category: 'men',
     subcategory: 'jacket',
@@ -282,12 +286,12 @@ const additionalProducts: Product[] = [
     colors: ['Black', 'Brown'],
     rating: 4.9,
     reviews: 45,
-    inStock: true,
-    occasion: ['casual', 'party']
+    stock: 20,
+    occasion: ['casual', 'party'],
+    tags: ['leather', 'jacket', 'premium']
   },
   // More Women's items
   {
-    id: 'women-6',
     name: 'Embroidered Lehenga',
     namebn: 'এমব্রয়ডারি লেহেঙ্গা',
     category: 'women',
@@ -299,12 +303,12 @@ const additionalProducts: Product[] = [
     colors: ['Red', 'Maroon', 'Pink', 'Golden'],
     rating: 4.9,
     reviews: 67,
-    inStock: true,
+    stock: 25,
     isTraditional: true,
-    occasion: ['wedding', 'party']
+    occasion: ['wedding', 'party'],
+    tags: ['lehenga', 'embroidery', 'wedding']
   },
   {
-    id: 'women-7',
     name: 'Denim Jacket',
     category: 'women',
     subcategory: 'jacket',
@@ -315,12 +319,12 @@ const additionalProducts: Product[] = [
     colors: ['Blue', 'Black', 'White'],
     rating: 4.5,
     reviews: 198,
-    inStock: true,
-    occasion: ['casual', 'daily']
+    stock: 55,
+    occasion: ['casual', 'daily'],
+    tags: ['denim', 'jacket', 'trendy']
   },
   // More Kids items
   {
-    id: 'kids-6',
     name: 'Cartoon Printed Pajama',
     namebn: 'কার্টুন প্রিন্টেড পায়জামা',
     category: 'kids',
@@ -332,9 +336,50 @@ const additionalProducts: Product[] = [
     colors: ['Blue', 'Pink', 'Yellow', 'Green'],
     rating: 4.7,
     reviews: 234,
-    inStock: true,
-    occasion: ['sleep', 'home']
+    stock: 95,
+    occasion: ['sleep', 'home'],
+    tags: ['pajama', 'cartoon', 'sleepwear']
   }
 ];
 
-export const allProducts = [...products, ...additionalProducts];
+const allProducts = [...sampleProducts, ...additionalProducts];
+
+async function seedDatabase() {
+  try {
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/genai-fashion');
+    console.log('✅ Connected to MongoDB');
+
+    // Clear existing products
+    await Product.deleteMany({});
+    console.log('🗑️  Cleared existing products');
+
+    // Insert new products
+    const insertedProducts = await Product.insertMany(allProducts);
+    console.log(`✅ Inserted ${insertedProducts.length} products`);
+
+    // Log category counts
+    const menCount = await Product.countDocuments({ category: 'men' });
+    const womenCount = await Product.countDocuments({ category: 'women' });
+    const kidsCount = await Product.countDocuments({ category: 'kids' });
+
+    console.log(`📊 Product counts:`);
+    console.log(`   Men: ${menCount}`);
+    console.log(`   Women: ${womenCount}`);
+    console.log(`   Kids: ${kidsCount}`);
+    console.log(`   Total: ${menCount + womenCount + kidsCount}`);
+
+    console.log('🎉 Database seeded successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error seeding database:', error);
+    process.exit(1);
+  }
+}
+
+// Run the seed function
+if (require.main === module) {
+  seedDatabase();
+}
+
+module.exports = { seedDatabase, allProducts };
